@@ -4,22 +4,23 @@ import { baseurl } from "../profile/logOperation";
 import { View, Text, StyleSheet } from "react-native";
 
 const GroupDetails = ({ groupId }) => {
-  async function fetchDetailsFromServer(groupId){
-    const response = await axios.get(`${baseurl}groupdetails`,{headers:{
-        data:groupId}
+  async function fetchDetailsFromServer(groupId: string) {
+    const response = await axios.get(`${baseurl}groupdetails`, {
+      headers: {
+        data: groupId,
+      },
     });
-    const data = await response.data
+    const data = await response.data;
+
     return data;
-  };
+  }
 
   const [details, setDetails] = React.useState(null);
 
   React.useEffect(() => {
     const fetchData = async () => {
       const fetchedDetails = await fetchDetailsFromServer(groupId);
-      setDetails(fetchedDetails[0]);
-      console.log("d:",fetchedDetails);
-      
+      setDetails(fetchedDetails);
     };
 
     fetchData();

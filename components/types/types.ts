@@ -13,3 +13,13 @@ export type Group = {
     listGroups: Group[];
   }|any;
   
+ export type Task = {
+    id:string;
+    sender:string;
+    open:boolean;
+    save:boolean;
+    close:boolean;
+    address:string;
+    price:number;
+    username?:string;
+  } |null

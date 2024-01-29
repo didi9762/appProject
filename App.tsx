@@ -6,6 +6,7 @@ import GroupsPage from './components/groups/groupsPage';
 import HistoryPage from './components/missionZone/HistoryPage';
 import LoginScreen from './components/profile/logIn';
 import  {Provider} from 'jotai'
+import MissionsInPrograss from './components/missionZone/missionInPrograss';
 
 
 export default function App(){
@@ -20,6 +21,7 @@ return (
     <stack.Screen name='HistoryPage' component={HistoryPage}/>
     <stack.Screen name='GroupsPage' component={GroupsPage}/>
     <stack.Screen name='LogIn' component={LoginScreen}/>
+    <stack.Screen name='Prograss' component={MissionsInPrograss}/>
    </stack.Navigator>
   </NavigationContainer>
   </Provider>

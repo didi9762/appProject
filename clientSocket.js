@@ -1,10 +1,21 @@
 
-const token= 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6ImRpZGkiLCJpYXQiOjE1MTYyMzkwMjJ9.QQtZFto9uXFKebk6QtHOmf8LzXQrbcXEQpIK8GlmAVo' 
+// const url = 'https://app-server-socket.onrender.com'
+
+import TemporaryUrl from "./temperuryUrl.js";
+
+// const ip = process.env.BASE_URL
+const ip = TemporaryUrl
+console.log(ip);
+const url = `http://${ip}:8888/client/`
+console.log('b:',url);
+// console.log('url:');
+
+const token= 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwidXNlck5hbWUiOiJyeWFuX21pbGxlciIsImlhdCI6MTUxNjIzOTAyMn0.bUWcin4Uf6CG4mBQlAlo46bcbuHm7WxeOzQcKQhYmrI' 
  class DeliveryGuy {
-  constructor(userId,updateData,alertFunc) {
+  constructor(userName,updateData,alertFunc,refreshFunc) {
     this.isConnect = 0
-    this.serverAddress = `https://app-server-socket.onrender.com?token=${token}`; 
-    this.userId = userId;
+    this.serverAddress = `${url}?token=${token}`; 
+    this.userId = userName;
     this.getMessages =  true;
     this.sendMessage  = false;
     this.online = false;
@@ -24,7 +35,10 @@ const token= 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwib
       console.log(`Received message: ${JSON.parse(event.data)}`);
       const parsedObject = JSON.parse(event.data);
       if (parsedObject.type) {
-          console.log('massege:', parsedObject.message);
+          if(parsedObject.type==='close'){
+            alertFunc('success','sender confirm, you on a mission')
+            refreshFunc();return}
+            console.log('type:',parsedObject.type,'massege:', parsedObject.message);
           alertFunc(parsedObject.type,parsedObject.message)
         }
       else {
@@ -32,14 +46,17 @@ const token= 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwib
 
     });
 
-    this.socket.addEventListener('close', () => {
-      console.log(this.socket);
+    this.socket.addEventListener('close', (event) => {
       this.online = false
+if(event.reason===''){
       if(this.isConnect){
         alertFunc('success', 'disconnected successfully')
       }
       if(!this.isConnect){
-      alertFunc('error','cant reach server try again')}
+      alertFunc('error','cant reach server try again')}}
+      else{
+        alertFunc('error', 'WebSocket connection error. Please try go online again.');
+      }
       updateData(null)
       console.log('Connection closed');
     });
@@ -58,8 +75,8 @@ const token= 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwib
 
 
 
-export default function newDeliverySocket(userId,updateData,alertFunc){
-return new DeliveryGuy(userId,updateData,alertFunc);
+export default function newDeliverySocket(userId,updateData,alertFunc,refreshFunc){
+return new DeliveryGuy(userId,updateData,alertFunc,refreshFunc);
 }
 
 

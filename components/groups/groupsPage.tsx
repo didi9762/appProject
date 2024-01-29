@@ -12,13 +12,11 @@ export default function GroupsPage() {
   const [isOpen,setIsOpen] = react.useState('')
   const navigation:any = useNavigation();
   react.useEffect(() => {
-    console.log('D:',userD);
-    
-    if (!userD.name) {
+    if (!userD) {
       navigation.navigate("LogIn");
     }
-    if (userD.listGroups) {
-      setGroups(userD.listGroups);    
+    if (userD.group) {
+      setGroups(userD.group);    
     }
   }, []);
 
@@ -37,19 +35,19 @@ export default function GroupsPage() {
             },
             {
               title: "internal",
-              data: groups.filter((group) => group.type === "internal"),
+              data: groups.filter((group) => group.type !== "internal"),
             },
           ]}
           renderItem={({ item }) => (
-            <Pressable onPress={()=>{isOpen===item.groupId?setIsOpen(''):setIsOpen(item.groupId)}}>
-            <Text style={styles.item}>{item.name}</Text>
-            {isOpen===item.groupId?<GroupDetails groupId={item.groupId}/>:null}
+            <Pressable onPress={()=>{isOpen===item?setIsOpen(''):setIsOpen(item)}}>
+            <Text style={styles.item}>{item}</Text>
+            {isOpen===item?<GroupDetails groupId={item}/>:null}
             </Pressable> 
           )}
           renderSectionHeader={({ section }) => (
             <Text style={styles.sectionHeader}>{section.title}</Text>
           )}
-          keyExtractor={(item) => `basicListEntry-${item.groupId}`}
+          keyExtractor={(item) => `basicListEntry-${item}`}
         />
       )}
     </View>

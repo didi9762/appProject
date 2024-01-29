@@ -8,6 +8,7 @@ import {Svg, Path} from 'react-native-svg';
 interface params {
 title:String
 navigation:any
+closeFunc:(taskId:string,sender:string)=>void
 }
 
 function HeaderApp (props:params) {
@@ -28,7 +29,7 @@ function HeaderApp (props:params) {
           />
         </Svg>
       </TouchableOpacity>
-         <Menu isVisible={isMenuVisible} onClose={toggleMenu} navigation={props.navigation}/>
+         <Menu isVisible={isMenuVisible} onClose={toggleMenu} navigation={props.navigation} taskDone={props.closeFunc}/>
          
       <Text style={styles.title}>
         {props.title}

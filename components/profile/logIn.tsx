@@ -12,7 +12,6 @@ const LoginScreen = ({ navigation }) => {
 
   const onLoginPressed = async() => {
     const userD =await logInFunc(userName.value,password.value)
-    console.log('userd:',userD);
     
     setUserDetails(userD)
       setUserName({ ...userName, error: userName.error });

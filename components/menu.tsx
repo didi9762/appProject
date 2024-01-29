@@ -10,13 +10,16 @@ interface MenuProps {
   isVisible: boolean;
   onClose: () => void;
   navigation: any;
+  taskDone:(taskId:string,sender:string)=>void
 }
 
-const Menu: React.FC<MenuProps> = ({ isVisible, onClose, navigation }) => {
+const Menu: React.FC<MenuProps> = ({ isVisible, onClose, navigation,taskDone }) => {
   const [userD] = useAtom(userDetails);
   const { height } = Dimensions.get("window");
   function itemClick(linkTo: string) {
-    navigation.navigate(linkTo);
+    if(linkTo==='Prograss'){
+    navigation.navigate(linkTo,{taskDone});
+    }else{navigation.navigate(linkTo)}
   }
 
   return (
@@ -35,11 +38,11 @@ const Menu: React.FC<MenuProps> = ({ isVisible, onClose, navigation }) => {
           <Pressable
             style={styles.option}
             onPress={() => {
-              if (userD.name !== "") {
+              if (userD !==null) {
                 itemClick("ProfilePage");
                 onClose();
               } else {
-                console.log(userD.name);
+                console.log(userD);
                 itemClick('LogIn')
                 onClose();
               }
@@ -66,6 +69,17 @@ const Menu: React.FC<MenuProps> = ({ isVisible, onClose, navigation }) => {
             <Text>My Groups</Text>
           </Pressable>
           <Pressable
+            style={styles.option}
+            onPress={() => {
+              itemClick("Prograss");
+              onClose();
+            }}
+          >
+            <Text>Missions in prograss</Text>
+          </Pressable>
+
+          <Pressable
+          
             style={styles.option}
             onPress={() => {
               itemClick("settings"), onClose();

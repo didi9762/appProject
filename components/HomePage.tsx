@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Button, ScrollView } from 'react-native';
+import { View, Button,  ScrollView, RefreshControl } from 'react-native';
 import MassionCard from './missionZone/missionCard';
 import { Text } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
@@ -12,13 +12,25 @@ export default function HomePage({
   takeMission,
   online
 }) {
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    refreshData();
+    setRefreshing(false);
+  }, [refreshData]);
 
 const navigation = useNavigation()
 
   return (
     <View style={{height:'90%',width:'100%'}}>
     <Button onPress={refreshData} title="Refresh Data" />
-      <ScrollView >
+      <ScrollView 
+      refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+
         {Array.isArray(openMissions)&&openMissions.length>0
           ? openMissions.map((card, index) => (
               <View

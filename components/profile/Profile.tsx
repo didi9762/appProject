@@ -1,7 +1,7 @@
 import * as react from 'react'
 import { View,Text } from 'react-native'
 import { Avatar, Button } from 'react-native-elements'
-import { useNavigation } from '@react-navigation/native';
+import { NavigationAction, useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { userDetails } from './logOperation';
 import { useAtom } from 'jotai';
@@ -10,6 +10,14 @@ import { useAtom } from 'jotai';
 export default function ProfilePage(){
 const [userD]= useAtom(userDetails)
 const navigation:any = useNavigation()
+
+react.useEffect(()=>{
+    console.log('ud:',userD);
+    
+if(userD===null){
+    navigation.navigate('LogIn')
+}
+},[])
 function login(){
     navigation.navigate('LogIn')
 }

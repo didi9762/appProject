@@ -12,7 +12,7 @@ const LoginScreen = ({ navigation }) => {
 
   const onLoginPressed = async() => {
     const userD =await logInFunc(userName.value,password.value)
-    
+    userD.online = false
     setUserDetails(userD)
       setUserName({ ...userName, error: userName.error });
       setPassword({ ...password, error: password.error });

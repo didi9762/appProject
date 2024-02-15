@@ -1,9 +1,9 @@
-// logOperation.js
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useAtom, atom } from 'jotai';
 import { User } from '../types/types';
 import TemporaryUrl from '../../temperuryUrl.js';
+import { Socket } from 'net';
 
 // const ip = process.env.BASE_URL
 const ip = TemporaryUrl
@@ -11,7 +11,7 @@ const baseurl = `http://${ip}:12345/client/`
 console.log('http url:',baseurl);
 
 // const baseurl = 'https://app-http-server.vercel.app/client/';
-const userDetails = atom<User>(null); 
+const userDetails = atom<User>(null as User); 
 
 const logInFunc = async (userName:string, password:string) => {
   try {
@@ -33,4 +33,18 @@ const storeToken = async (token:string) => {
   }
 };
 
-export { logInFunc, baseurl, userDetails };
+async function updateUserInfo() {
+  const token =await AsyncStorage.getItem('tokenkey')
+  if(!token){console.log('no token');return
+  }
+  const response =await axios.get(`${baseurl}getupdates`,{headers:{
+    "Content-Type":'string',
+    authorization:token
+  }})
+  const res = await JSON.parse(response.data)
+return res
+}
+
+const userSocket = atom <WebSocket>(null as WebSocket)
+
+export { logInFunc, baseurl, userDetails,updateUserInfo,userSocket };

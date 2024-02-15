@@ -12,7 +12,7 @@ import {
   RefreshControl,
 } from "react-native";
 import { useAtom } from "jotai";
-import { userDetails,updateUserInfo } from "../profile/logOperation";
+import { userDetails ,updateUserInfo} from "../profile/logOperation";
 import { useNavigation } from "@react-navigation/native";
 import GroupDetails from "./groupDetails";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
@@ -20,37 +20,25 @@ import GroupOptions from "./groupsOptions";
 import { User } from "../types/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function GroupsPage() {
+export default function GroupsRequests() {
   const [userD,setUserD] = useAtom(userDetails);
   const [groups, setGroups] = react.useState([]);
   const [isOpen, setIsOpen] = react.useState("");
   const [menuOpen, setMenuOpen] = react.useState(false);
-  const [update, setUpdate] = react.useState(null);
-  const [reload,setReload] = react.useState(false)
-  const [refreshing,setRefreshing] = react.useState(false)
+  const [reload, setReload] = react.useState(false);
+  const [refresh,setRefresh] = react.useState(false)
   const navigation = useNavigation();
   react.useEffect(() => {
-    async function getUpdates() {
-      const prevGroups = await AsyncStorage.getItem("group");
-      if (prevGroups && userD.group.length !== prevGroups.split(",").length) {
-        setUpdate(
-          userD.group.filter((g) =>{
-           return !prevGroups.split(",").includes(g)})
-        );
-        await AsyncStorage.setItem("group", userD.group.toString());
-      } else if (!prevGroups) {
-        await AsyncStorage.setItem("group", userD.group.toString());
-      }
-    }
-    getUpdates();
     navigation.setOptions({
       headerRight: () => <GroupMenuButton />,
     });
     if (!userD) {
       navigation.navigate("LogIn");
     }
-    setGroups(userD.group)
-  }, [userD]);
+    if (userD.requests) {
+      setGroups(userD.requests);
+    }
+  }, [reload,userD]);
 
   const GroupMenuButton = () => {
     return (
@@ -70,38 +58,66 @@ export default function GroupsPage() {
   function toggleMenu() {
     setMenuOpen(!menuOpen);
   }
+
+  function dateDifference(date: Date) {
+    const currentDate = new Date();
+    const storedDate = new Date(date);
+
+    if (
+      storedDate.getDate() === currentDate.getDate() &&
+      storedDate.getDay() === currentDate.getDay() &&
+      storedDate.getFullYear() === currentDate.getFullYear()
+    ) {
+      return `Request sent today`;
+    } else {
+      const differenceInTime = currentDate.getTime() - storedDate.getTime();
+      const differenceInDays = Math.floor(
+        differenceInTime / (1000 * 3600 * 24)
+      );
+      return `Request sent ${differenceInDays + 1} days ego`;
+    }
+  }
   async function handleRefresh(){
-    setRefreshing(true)
-    const userInfo = await updateUserInfo()
-    setUserD(userInfo)
-    setRefreshing(false)
-      }
+setRefresh(true)
+const userInfo = await updateUserInfo()
+setUserD(userInfo)
+setRefresh(false)
+  }
 
   return (
-    <View>
- <RefreshControl style={{height:'100%'}} refreshing={refreshing} onRefresh={handleRefresh}>
-      {menuOpen && <GroupOptions isOpen={menuOpen} onClose={toggleMenu} />}
+    <View style={styles.container} >
+      
+      <RefreshControl style={{height:'100%'}} refreshing={refresh} onRefresh={handleRefresh}>
+      {menuOpen && <GroupOptions  isOpen={menuOpen} onClose={toggleMenu} />}
       {groups.length === 0 ? (
-        <Text>you arent in any group currently</Text>
+       
+        <Text>no requests are waiting right now</Text>
       ) : (
         <SectionList
         style={{height:'100%'}}
           sections={[
             {
-              title: "internal",
-              data: groups.filter((group) => group),
-            }
-            
+              title: "requests sent to:",
+              data: groups,
+            },
           ]}
           renderItem={({ item }) => (
-            <Pressable 
+            <Pressable
               onPress={() => {
-                isOpen === item ? setIsOpen("") : setIsOpen(item);
+                isOpen === item.userId ? setIsOpen("") : setIsOpen(item.userId);
               }}
+              style={{ borderBottomColor: "black", borderBottomWidth: 1 }}
             >
-              <Text style={styles.itemText}>{item}</Text>
-              {update&&update.includes(item)?<View style={styles.newIcon}><Text style={styles.iconText}>New</Text></View>:null}
-              {isOpen === item ? <GroupDetails groupId={item} flag={false} reload={()=>setReload(!reload)} /> : null}
+              <Text style={styles.item}>{item.userId}</Text>
+              <Text style={styles.item}>{dateDifference(item.time)}</Text>
+
+              {isOpen === item.userId ? (
+                <GroupDetails
+                  groupId={item.userId}
+                  flag={true}
+                  reload={() => setReload(!reload)}
+                />
+              ) : null}
             </Pressable>
           )}
           renderSectionHeader={({ section }) => (
@@ -109,17 +125,15 @@ export default function GroupsPage() {
           )}
           keyExtractor={(item) => `basicListEntry-${item}`}
         />
-
-      )}
-      </RefreshControl>
-
+      )}</RefreshControl>
     </View>
   );
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 22,
+    padding: 10,
+    height: "100%",
   },
   sectionHeader: {
     paddingTop: 2,
@@ -130,25 +144,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     backgroundColor: "rgba(247,247,247,1.0)",
   },
-  itemText: {
+  item: {
     padding: 10,
     fontSize: 18,
     height: 44,
-    display:'flex',
   },
-  newIcon:{
-    height:'40%',
-    width:'12%',
-    backgroundColor:'green',
-    position:'absolute',
-    right:'7%',
-    top:'50%',
-    borderRadius:15,
-  }
-,iconText:{
-  color:'white',
-  fontSize:13,
-textAlign:'center',
-
-}
 });

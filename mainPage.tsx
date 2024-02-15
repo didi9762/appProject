@@ -12,7 +12,11 @@ import HistoryPage from "./components/missionZone/HistoryPage";
 import { useNavigation } from "@react-navigation/native";
 import { useAtom } from "jotai";
 import { baseurl } from "./components/profile/logOperation";
-import { userDetails } from "./components/profile/logOperation";
+import { userDetails,userSocket } from "./components/profile/logOperation";
+import { User } from "./components/types/types";
+
+
+
 
 const token =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwidXNlck5hbWUiOiJyeWFuX21pbGxlciIsImlhdCI6MTUxNjIzOTAyMn0.bUWcin4Uf6CG4mBQlAlo46bcbuHm7WxeOzQcKQhYmrI";
@@ -25,12 +29,14 @@ interface ClientSocket {
 
 function MainPage() {
   const [data, setData] = useState<Array<any> | []>([]);
-  const [userD] = useAtom(userDetails);
+  const [userD,setUserD] = useAtom(userDetails);
+  const [,setSocket] = useAtom(userSocket)
   const [clientSocket, setClientSocket] = useState<ClientSocket | null>(null);
   const navigation = useNavigation();
   
 
   useEffect(() => {
+    if(!userD){navigation.navigate('LogIn' as never)}
     if (clientSocket) {
       const messageCallback = (message: any) => {
         updateData(message);
@@ -41,12 +47,17 @@ function MainPage() {
 
   function goOnline() {
     if (!userD) {
-      navigation.navigate("LogIn");
+      navigation.navigate("LogIn" as never);
       return;
     }
-    const newSocket = newDeliverySocket(userD.userName, updateData, alertFunc,refresh);
+    
+    const newSocket = newDeliverySocket(userD.userName, updateData, alertFunc,refresh,goOffline);
     setClientSocket(newSocket);
+    setUserD({ ...userD, online: true });
+    setSocket(newSocket.socket)
   }
+
+
 
   function updateData(newMission: any) {
     if (newMission) {
@@ -61,8 +72,6 @@ function MainPage() {
           })
         );
       } else if (newMission.open) {
-        console.log('updte:',newMission);
-        
         setData((prev: Array<any>) => [...prev, newMission]);
       } else if(newMission.type){
         console.log('message:',newMission.type);
@@ -78,7 +87,7 @@ function MainPage() {
 
   function takeMission(missionId: string) {
     if(!userD){
-      navigation.navigate('LogIn')
+      navigation.navigate('LogIn' as never)
     }
     if (clientSocket&&userD) {
       clientSocket.socket.send(JSON.stringify({ type: "save", missionId:missionId,userDetailes:userD.userName }));
@@ -105,21 +114,27 @@ function MainPage() {
     }
   }
 
-  function goOffline() {
+  function goOffline(error:boolean) {
     if (clientSocket) {
       clientSocket.socket.close();
       setClientSocket(null);
+      setUserD((prevUserD) => ({ ...prevUserD, online: false }));
+      setSocket(null)
     }
-  }
-  function taskDone(taskId:string,sender:string){
-if(clientSocket&&clientSocket.socket)
-clientSocket.socket.send(JSON.stringify({ type: "done", missionId:taskId,userDetailes:userD.userName,sender:sender }));
+    else if(error){
+      setClientSocket(null);
+      setUserD((prevUserD) => ({ ...prevUserD, online: false }));
+      setSocket(null)
+    }
+
+    
   }
 
+
+
   return (
-    <View style={{ marginTop: 20 }}>
+    <View style={{ marginTop: 20 ,backgroundColor:'white'}}>
       <HeaderApp
-        closeFunc={taskDone}
         title={clientSocket ? "online" : "offline"}
         navigation={navigation}
       />

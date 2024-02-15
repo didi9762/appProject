@@ -1,8 +1,15 @@
-import React from 'react';
-import { View, Button,  ScrollView, RefreshControl } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Button,  ScrollView, RefreshControl,TouchableOpacity, StyleSheet } from 'react-native';
 import MassionCard from './missionZone/missionCard';
 import { Text } from 'react-native-elements';
-import { useNavigation } from '@react-navigation/native';
+import AwesomeButton from "react-native-really-awesome-button";
+import Btn from './buttons/onlineBtn';
+import Filtering from './filtering/filtering';
+import { useAtom } from 'jotai';
+import filterAtom from './filtering/filterAtom';
+import { Task, defaultFilters } from './types/types';
+
+
 
 export default function HomePage({
   openMissions,
@@ -12,7 +19,9 @@ export default function HomePage({
   takeMission,
   online
 }) {
-  const [refreshing, setRefreshing] = React.useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [filters] = useAtom(filterAtom)
+  const [filteredMissions,setFilteredMissions] = useState <Array<Task> >([])
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -20,19 +29,48 @@ export default function HomePage({
     setRefreshing(false);
   }, [refreshData]);
 
-const navigation = useNavigation()
+  useEffect(()=>{
+    if(Array.isArray(openMissions)){ 
+      if(filters===defaultFilters){setFilteredMissions(openMissions)}
+      else{
+     setFilteredMissions(()=>{
+      const tasksList = []
+       openMissions.map((mission)=>{
+       const task = filterFunc(mission)
+       if(task){tasksList.push(task)}
+     })
+     return tasksList
+       })
+    }}
+  },[openMissions,filters])
+
+  function filterFunc(task:Task){
+    let flag = true
+    Object.entries(filters).map((filter)=>{
+      if(filter[0]==='minPrice'){
+          if(task.price<Number(filter[1])){
+          flag=false
+          }
+      }
+      else if(filter[1]!==''&&task[filter[0]]!==filter[1]){
+        flag= false}
+    })
+    return flag?task:flag
+    }
 
   return (
     <View style={{height:'90%',width:'100%'}}>
-    <Button onPress={refreshData} title="Refresh Data" />
+      <Btn onlineFunc={goOnline} oflineFunc={goOffline}/>
+      <Filtering/>
       <ScrollView 
       refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
+        
 
         {Array.isArray(openMissions)&&openMissions.length>0
-          ? openMissions.map((card, index) => (
+          ? filteredMissions.map((card, index) => (
               <View
                 key={index}
                 style={{
@@ -45,12 +83,21 @@ const navigation = useNavigation()
               </View>
             ))
           : <Text>No Missions Yet</Text>}
+          
       </ScrollView>
 
-      <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: 20 }}>
-        {!online?<Button onPress={goOnline} title="Go Online" />:null}
-       {online?<Button onPress={goOffline} title="Go Offline" />:null}
-      </View>
+
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  buttonText: {
+    padding: 8,
+    borderRadius: 4,
+    textAlign: "center",
+    color: "white",
+    fontWeight: '400',
+    fontSize: 18,
+  },
+})

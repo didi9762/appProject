@@ -1,26 +1,41 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import Modal from "react-native-modal";
 import { Dimensions } from "react-native";
-import { Text } from "react-native-elements";
+import { Button, Text } from "react-native-elements";
 import { useAtom } from "jotai";
 import { userDetails } from "./profile/logOperation";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import FontAwesome from 'react-native-vector-icons/FontAwesome'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 interface MenuProps {
   isVisible: boolean;
   onClose: () => void;
   navigation: any;
-  taskDone:(taskId:string,sender:string)=>void
 }
 
-const Menu: React.FC<MenuProps> = ({ isVisible, onClose, navigation,taskDone }) => {
+const Menu: React.FC<MenuProps> = ({ isVisible, onClose, navigation}) => {
   const [userD] = useAtom(userDetails);
+  const [groupUpdate,setGroupUpdate] = useState(false)
   const { height } = Dimensions.get("window");
+
+useEffect(()=>{
+ 
+},[])
+
   function itemClick(linkTo: string) {
-    if(linkTo==='Prograss'){
-    navigation.navigate(linkTo,{taskDone});
-    }else{navigation.navigate(linkTo)}
+    
+  navigation.navigate(linkTo)
   }
+
+  const updateIcon = ()=><View>
+
+  </View>
+
+
 
   return (
     <Modal
@@ -48,7 +63,8 @@ const Menu: React.FC<MenuProps> = ({ isVisible, onClose, navigation,taskDone }) 
               }
             }}
           >
-            <Text>My Profile</Text>
+            <Ionicons name="person-circle" size={30}/>
+            <Text style={styles.textOption}>My Profile</Text>
           </Pressable>
           <Pressable
             style={styles.option}
@@ -57,7 +73,8 @@ const Menu: React.FC<MenuProps> = ({ isVisible, onClose, navigation,taskDone }) 
               onClose();
             }}
           >
-            <Text>Tasks History</Text>
+            <FontAwesome name="history" size={25}/> 
+            <Text style={styles.textOption}>Tasks History</Text>
           </Pressable>
           <Pressable
             style={styles.option}
@@ -66,16 +83,18 @@ const Menu: React.FC<MenuProps> = ({ isVisible, onClose, navigation,taskDone }) 
               onClose();
             }}
           >
-            <Text>My Groups</Text>
+            <FontAwesome name="group" size={25}/>
+            <Text style={styles.textOption}>My Groups</Text>
           </Pressable>
           <Pressable
             style={styles.option}
             onPress={() => {
-              itemClick("Prograss");
+              itemClick("Progress");
               onClose();
             }}
           >
-            <Text>Missions in prograss</Text>
+            <MaterialCommunityIcons name="progress-clock" size={25}/>
+            <Text style={styles.textOption}>{'Missions \nin progress'}</Text>
           </Pressable>
 
           <Pressable
@@ -85,8 +104,14 @@ const Menu: React.FC<MenuProps> = ({ isVisible, onClose, navigation,taskDone }) 
               itemClick("settings"), onClose();
             }}
           >
-            <Text>Settings</Text>
+            <Ionicons name="settings" size={25}/>
+            <Text style={styles.textOption}>Settings</Text>
           </Pressable>
+
+          <Button title={'button for dev:lead to join group page'} buttonStyle={{width:100,backgroundColor:'gray'}} onPress={()=>{navigation.navigate('Join',{token:'alice_johnson'});onClose()}}/>
+
+         
+
         </View>
       </View>
     </Modal>
@@ -96,10 +121,12 @@ const Menu: React.FC<MenuProps> = ({ isVisible, onClose, navigation,taskDone }) 
 const styles = StyleSheet.create({
   modalStyle: {
     backgroundColor: "white",
-    width: "40%",
+    width: "50%",
     height: "100%",
   },
   option: {
+    display:'flex',
+    flexDirection:'row',
     height: "13%",
     width: "80%",
     textAlign: "left",
@@ -119,6 +146,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: "40%",
   },
+  textOption:{
+    marginLeft:15,
+    lineHeight:25,
+    fontWeight:'900'
+  }
 });
 
 export default Menu;

@@ -12,7 +12,7 @@ console.log('b:',url);
 
 const token= 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwidXNlck5hbWUiOiJyeWFuX21pbGxlciIsImlhdCI6MTUxNjIzOTAyMn0.bUWcin4Uf6CG4mBQlAlo46bcbuHm7WxeOzQcKQhYmrI' 
  class DeliveryGuy {
-  constructor(userName,updateData,alertFunc,refreshFunc) {
+  constructor(userName,updateData,alertFunc,refreshFunc,goOfline) {
     this.isConnect = 0
     this.serverAddress = `${url}?token=${token}`; 
     this.userId = userName;
@@ -38,11 +38,13 @@ const token= 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwid
           if(parsedObject.type==='close'){
             alertFunc('success','sender confirm, you on a mission')
             refreshFunc();return}
+            else if(parsedObject.type==='privet'||parsedObject.type==='public'){
+              updateData(parsedObject);}
+            else{
             console.log('type:',parsedObject.type,'massege:', parsedObject.message);
-          alertFunc(parsedObject.type,parsedObject.message)
+          alertFunc(parsedObject.type,parsedObject.message)}
+
         }
-      else {
-    updateData(parsedObject);}
 
     });
 
@@ -57,7 +59,7 @@ if(event.reason===''){
       else{
         alertFunc('error', 'WebSocket connection error. Please try go online again.');
       }
-      updateData(null)
+      goOfline(true)
       console.log('Connection closed');
     });
   }
@@ -75,8 +77,8 @@ if(event.reason===''){
 
 
 
-export default function newDeliverySocket(userId,updateData,alertFunc,refreshFunc){
-return new DeliveryGuy(userId,updateData,alertFunc,refreshFunc);
+export default function newDeliverySocket(userId,updateData,alertFunc,refreshFunc,goOfline){
+return new DeliveryGuy(userId,updateData,alertFunc,refreshFunc,goOfline);
 }
 
 

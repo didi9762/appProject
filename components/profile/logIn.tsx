@@ -19,7 +19,11 @@ const [baseurl,setBaseUrl] = useAtom(baseurlAtom)
 
   const logInFunc = async (userName:string, password:string) => {
     try {                                     // {url.value}
-      const response = await axios.post(`http://${url.value}:12345/client/login`, { userName: userName, password:password  });//change 
+      let urlToUse = 'https://app-http-server.vercel.app'
+      if(url.value!=='1'){urlToUse = `http://${url.value}:12345`}
+      console.log(urlToUse);
+      
+      const response = await axios.post(`${urlToUse}/client/login`, { userName: userName, password:password  });//change 
       const data = await response.data;
       if(!data||data===null){return}
      
@@ -62,8 +66,9 @@ const [baseurl,setBaseUrl] = useAtom(baseurlAtom)
   };
 
   const onLoginPressed = async() => {
-    setMassage(url.value)  // {url.value}
-    setBaseUrl(`http://${url.value}:12345/client/`)
+    let urlToUse = 'https://app-http-server.vercel.app'
+      if(url.value!=='1'){urlToUse = `http://${url.value}:12345`}
+    setBaseUrl(`${urlToUse}/client/`)
     const userD =await logInFunc(userName.value,password.value)
     userD.online = false
     setUserDetails(userD)

@@ -1,5 +1,5 @@
 
-// const url = 'https://app-server-socket.onrender.com'
+// const url = 
 
 import TemporaryUrl from "./temperuryUrl.js";
 
@@ -14,7 +14,7 @@ const token= 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwid
  class DeliveryGuy {
   constructor(userName,updateData,alertFunc,refreshFunc,goOfline,baseurl) {
     // When the URL is not absolute
-    const url = baseurl.replace('12345', '8888');
+    const url = baseurl.includes('https')?'https://app-server-socket.onrender.com':baseurl.replace('12345', '8888');
     this.isConnect = 0
     this.serverAddress = `${url}?token=${token}`; 
     this.userId = userName;

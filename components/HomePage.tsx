@@ -82,7 +82,7 @@ export default function HomePage({
                 <MassionCard info={card} takeMission={takeMission} />
               </View>
             ))
-          : <Text>No Missions Yet</Text>}
+          : <Text style={{textAlign:'center'}}>No Missions Yet</Text>}
           
       </ScrollView>
 

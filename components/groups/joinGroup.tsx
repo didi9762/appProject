@@ -1,6 +1,6 @@
 import React ,{useEffect, useState} from "react";
 import { useAtom } from "jotai";
-import { userDetails,baseurl } from "../profile/logOperation";
+import { userDetails,baseurlAtom } from "../profile/logOperation";
 import { User } from "../types/types";
 import { View,Text,ActivityIndicator, TouchableOpacity, StyleSheet } from "react-native";
 import axios from "axios";
@@ -10,6 +10,7 @@ import { useNavigation } from "@react-navigation/native";
 const JoinGroup = () =>{
     const [load,setLoad]= useState(false)
     const [message,setMessage]= useState('')
+    const [baseurl] = useAtom(baseurlAtom)
     const navigation = useNavigation()
     const route = useRoute();
 const {token}= route.params;
@@ -53,7 +54,7 @@ return(
         {load&&<ActivityIndicator size={60} color={'blue'}/>}
 
         {!load&&<Text style={{textAlign:'center',fontSize:70}}>{message}</Text>}
-        <TouchableOpacity style={styles.btn} onPress={()=>navigation.navigate('MainPage')}>
+        <TouchableOpacity style={styles.btn} onPress={()=>navigation.navigate('MainPage' as never)}>
          
             <Text style={{color:'red',fontSize:20,textAlign:'center'}}>Go To HomePage</Text>
         

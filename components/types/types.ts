@@ -6,12 +6,14 @@ export type Requests = {
   export type User = {
     userName:string,
     id: string;
-    name: string;
+    firstName: string;
     lastName: string;
     phone: string;
     group: Array<string>;
     online:boolean;
-    requests:Array<Requests>
+    requests:Array<Requests>;
+    tasksInProgress:Array<string>;
+    tasksHistory:Array<string>;
   }
   
  export type Task = {
@@ -19,7 +21,7 @@ export type Requests = {
   id:string;
   sender:string;
   open:boolean;
-  save:boolean|string;
+  saved:boolean|string;
   close:boolean;
   address:string;
   senderAddress:string;

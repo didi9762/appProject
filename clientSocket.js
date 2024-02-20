@@ -4,15 +4,17 @@
 import TemporaryUrl from "./temperuryUrl.js";
 
 // const ip = process.env.BASE_URL
-const ip = TemporaryUrl
-console.log(ip);
-const url = `http://${ip}:8888/client/`
-console.log('b:',url);
-// console.log('url:');
+// const ip = TemporaryUrl
+// console.log(ip);
+// const url = `http://${ip}:8888/client/`
+// console.log('b:',url);
+// // console.log('url:');
 
 const token= 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwidXNlck5hbWUiOiJyeWFuX21pbGxlciIsImlhdCI6MTUxNjIzOTAyMn0.bUWcin4Uf6CG4mBQlAlo46bcbuHm7WxeOzQcKQhYmrI' 
  class DeliveryGuy {
-  constructor(userName,updateData,alertFunc,refreshFunc,goOfline) {
+  constructor(userName,updateData,alertFunc,refreshFunc,goOfline,baseurl) {
+    // When the URL is not absolute
+    const url = baseurl.replace('12345', '8888');
     this.isConnect = 0
     this.serverAddress = `${url}?token=${token}`; 
     this.userId = userName;
@@ -25,14 +27,13 @@ const token= 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwid
       console.error('WebSocket error:', event);
     });
 
-    this.socket.addEventListener('open', () => { 
-      console.log(`${this.userId} Connected to the server`);
-      this.initiateCommunication();
-      this.online = true
-    });
+    // this.socket.addEventListener('open', () => { 
+    //   console.log(`${this.userId} Connected to the server`);
+    //   this.initiateCommunication();
+    //   this.online = true
+    // });
     
     this.socket.addEventListener('message', (event) => {
-      console.log(`Received message: ${JSON.parse(event.data)}`);
       const parsedObject = JSON.parse(event.data);
       if (parsedObject.type) {
           if(parsedObject.type==='close'){
@@ -41,11 +42,9 @@ const token= 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwid
             else if(parsedObject.type==='privet'||parsedObject.type==='public'){
               updateData(parsedObject);}
             else{
-            console.log('type:',parsedObject.type,'massege:', parsedObject.message);
-          alertFunc(parsedObject.type,parsedObject.message)}
-
+          alertFunc(parsedObject.type,parsedObject.message);
+          }
         }
-
     });
 
     this.socket.addEventListener('close', (event) => {
@@ -77,8 +76,8 @@ if(event.reason===''){
 
 
 
-export default function newDeliverySocket(userId,updateData,alertFunc,refreshFunc,goOfline){
-return new DeliveryGuy(userId,updateData,alertFunc,refreshFunc,goOfline);
+export default function newDeliverySocket(userId,updateData,alertFunc,refreshFunc,goOfline,url){
+return new DeliveryGuy(userId,updateData,alertFunc,refreshFunc,goOfline,url);
 }
 
 

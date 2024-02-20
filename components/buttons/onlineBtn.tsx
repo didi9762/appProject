@@ -8,19 +8,20 @@ import { Button } from "react-native-elements";
 import { useNavigation } from "@react-navigation/native";
 
 interface props {
-  onlineFunc: () => void;
+  onlineFunc: () => boolean;
   oflineFunc: () => void;
 }
 
 const Btn = ({ onlineFunc, oflineFunc }: props) => {
   const [state, setState] = useState(false);
   const [userD] = useAtom(userDetails);
+  const [load,setLoad] = useState(false)
   let forceResetLastButton = null;
   const navigation = useNavigation();
 
   useEffect(() => {  
     if (!userD) {
-      navigation.navigate("LogIn");
+      navigation.navigate("LogIn" as never);
     } else {
       setState(userD.online);
     }
@@ -36,13 +37,21 @@ const Btn = ({ onlineFunc, oflineFunc }: props) => {
     );
   }
   async function handleSwipe() {
+    if(userD){
     if (!userD.online) {
-      await onlineFunc();
+      try{
+      const res = await onlineFunc();
+        setState(!state);
+      }catch(e){
+        console.log('cennot connect');
+      }
     } else {
       await oflineFunc();
+      setState(!state);
     }
+    }
+    else{navigation.navigate('LogIn' as never)}
     forceResetLastButton && forceResetLastButton();
-    setState(!state);
   }
 
   return (

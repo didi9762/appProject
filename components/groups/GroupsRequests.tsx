@@ -12,13 +12,14 @@ import {
   RefreshControl,
 } from "react-native";
 import { useAtom } from "jotai";
-import { userDetails ,updateUserInfo} from "../profile/logOperation";
+import { userDetails ,baseurlAtom} from "../profile/logOperation";
 import { useNavigation } from "@react-navigation/native";
 import GroupDetails from "./groupDetails";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import GroupOptions from "./groupsOptions";
-import { User } from "../types/types";
+import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { updateUserInfo } from "../profile/updateUserInfo";
 
 export default function GroupsRequests() {
   const [userD,setUserD] = useAtom(userDetails);
@@ -27,18 +28,21 @@ export default function GroupsRequests() {
   const [menuOpen, setMenuOpen] = react.useState(false);
   const [reload, setReload] = react.useState(false);
   const [refresh,setRefresh] = react.useState(false)
+  const [baseurl] = useAtom(baseurlAtom)
   const navigation = useNavigation();
   react.useEffect(() => {
     navigation.setOptions({
       headerRight: () => <GroupMenuButton />,
     });
     if (!userD) {
-      navigation.navigate("LogIn");
+      navigation.navigate("LogIn" as never);
     }
     if (userD.requests) {
       setGroups(userD.requests);
     }
   }, [reload,userD]);
+
+  
 
   const GroupMenuButton = () => {
     return (
@@ -79,8 +83,8 @@ export default function GroupsRequests() {
   }
   async function handleRefresh(){
 setRefresh(true)
-const userInfo = await updateUserInfo()
-setUserD(userInfo)
+const userInfo = await updateUserInfo(baseurl)
+setUserD({...userD,requests:userInfo.requests})
 setRefresh(false)
   }
 

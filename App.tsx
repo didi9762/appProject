@@ -9,11 +9,12 @@ import  {Provider} from 'jotai'
 import MissionsInProgress from './components/missionZone/missionInProgress';
 import React, { useEffect } from 'react';
 import JoinGroup from './components/groups/joinGroup';
-import {I18nManager} from 'react-native'
+import {I18nManager,StatusBar} from 'react-native'
 import GroupsRequests from './components/groups/GroupsRequests';
 
 I18nManager.forceRTL(false)
 I18nManager.allowRTL(false)
+StatusBar.setHidden(false)
 export default function App(){
 const stack = createStackNavigator()
 

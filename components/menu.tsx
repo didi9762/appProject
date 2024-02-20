@@ -4,12 +4,13 @@ import Modal from "react-native-modal";
 import { Dimensions } from "react-native";
 import { Button, Text } from "react-native-elements";
 import { useAtom } from "jotai";
-import { userDetails } from "./profile/logOperation";
+import { baseurlAtom, userDetails } from "./profile/logOperation";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import FontAwesome from 'react-native-vector-icons/FontAwesome'
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import AntDesign from "react-native-vector-icons/AntDesign";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import { updateUserInfo } from "./profile/updateUserInfo";
 
 interface MenuProps {
   isVisible: boolean;
@@ -17,25 +18,33 @@ interface MenuProps {
   navigation: any;
 }
 
-const Menu: React.FC<MenuProps> = ({ isVisible, onClose, navigation}) => {
-  const [userD] = useAtom(userDetails);
-  const [groupUpdate,setGroupUpdate] = useState(false)
+const Menu: React.FC<MenuProps> = ({ isVisible, onClose, navigation }) => {
+  const [userD, setUserD] = useAtom(userDetails);
+  const [baseurl] = useAtom(baseurlAtom);
+  const [newGroups,setNewGroups] = useState(false);
   const { height } = Dimensions.get("window");
 
-useEffect(()=>{
- 
-},[])
+  useEffect(() => {
+    if(isVisible&&userD){
+    async function getUpdates() {
+      const groupsList = await AsyncStorage.getItem('group')
+      const updates = await updateUserInfo(baseurl);
+      setUserD({
+        ...userD,
+        tasksHistory: updates.tasksHistory,
+        tasksInProgress: updates.tasksInProgress,
+        group: updates.group,
+      });
+      if(groupsList&&groupsList.split(',').length<updates.group.length)
+      {setNewGroups(true);
+      }else{setNewGroups(false)}
+    }
+    getUpdates()}
+  }, [isVisible]);
 
   function itemClick(linkTo: string) {
-    
-  navigation.navigate(linkTo)
+    navigation.navigate(linkTo);
   }
-
-  const updateIcon = ()=><View>
-
-  </View>
-
-
 
   return (
     <Modal
@@ -53,17 +62,16 @@ useEffect(()=>{
           <Pressable
             style={styles.option}
             onPress={() => {
-              if (userD !==null) {
+              if (userD !== null) {
                 itemClick("ProfilePage");
                 onClose();
               } else {
-                console.log(userD);
-                itemClick('LogIn')
+                itemClick("LogIn");
                 onClose();
               }
             }}
           >
-            <Ionicons name="person-circle" size={30}/>
+            <Ionicons name="person-circle" size={30} />
             <Text style={styles.textOption}>My Profile</Text>
           </Pressable>
           <Pressable
@@ -73,7 +81,7 @@ useEffect(()=>{
               onClose();
             }}
           >
-            <FontAwesome name="history" size={25}/> 
+            <FontAwesome name="history" size={25} />
             <Text style={styles.textOption}>Tasks History</Text>
           </Pressable>
           <Pressable
@@ -82,8 +90,15 @@ useEffect(()=>{
               itemClick("GroupsPage");
               onClose();
             }}
-          >
-            <FontAwesome name="group" size={25}/>
+          >{newGroups? (
+            <AntDesign
+              name="exclamationcircle"
+              size={25}
+              color={"#ff6f00d5"}
+              style={{ position: "absolute", right: 3, top: -5, zIndex: 2 }}
+            />
+          ) : null}
+            <FontAwesome name="group" size={25} />
             <Text style={styles.textOption}>My Groups</Text>
           </Pressable>
           <Pressable
@@ -93,25 +108,36 @@ useEffect(()=>{
               onClose();
             }}
           >
-            <MaterialCommunityIcons name="progress-clock" size={25}/>
-            <Text style={styles.textOption}>{'Missions \nin progress'}</Text>
+            {userD?.tasksInProgress.length > 0 ? (
+              <AntDesign
+                name="exclamationcircle"
+                size={25}
+                color={"#ff6f00d5"}
+                style={{ position: "absolute", right: 3, top: -5, zIndex: 2 }}
+              />
+            ) : null}
+            <MaterialCommunityIcons name="progress-clock" size={25} />
+            <Text style={styles.textOption}>{"Missions \nin progress"}</Text>
           </Pressable>
 
           <Pressable
-          
             style={styles.option}
             onPress={() => {
               itemClick("settings"), onClose();
             }}
           >
-            <Ionicons name="settings" size={25}/>
+            <Ionicons name="settings" size={25} />
             <Text style={styles.textOption}>Settings</Text>
           </Pressable>
 
-          <Button title={'button for dev:lead to join group page'} buttonStyle={{width:100,backgroundColor:'gray'}} onPress={()=>{navigation.navigate('Join',{token:'alice_johnson'});onClose()}}/>
-
-         
-
+          <Button
+            title={"button for dev:lead to join group page"}
+            buttonStyle={{ width: 100, backgroundColor: "gray" }}
+            onPress={() => {
+              navigation.navigate("Join", { token: "alice_johnson" });
+              onClose();
+            }}
+          />
         </View>
       </View>
     </Modal>
@@ -125,8 +151,8 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   option: {
-    display:'flex',
-    flexDirection:'row',
+    display: "flex",
+    flexDirection: "row",
     height: "13%",
     width: "80%",
     textAlign: "left",
@@ -146,11 +172,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: "40%",
   },
-  textOption:{
-    marginLeft:15,
-    lineHeight:25,
-    fontWeight:'900'
-  }
+  textOption: {
+    marginLeft: 15,
+    lineHeight: 25,
+    fontWeight: "900",
+  },
 });
 
 export default Menu;

@@ -1,7 +1,7 @@
 import axios from "axios";
 import React from "react";
-import { baseurl, updateUserInfo, userDetails } from "../profile/logOperation";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { baseurlAtom,  userDetails } from "../profile/logOperation";
+import { View, Text, StyleSheet, TouchableOpacity,Alert } from "react-native";
 import { useAtom } from "jotai";
 import { User } from "../types/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -9,6 +9,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const GroupDetails = ({ groupId, flag, reload }) => {
   const [userD, setUserD] = useAtom(userDetails);
   const [details, setDetails] = React.useState(null);
+  const [baseurl] = useAtom(baseurlAtom)
 
   async function fetchDetailsFromServer(groupId: string) {
     const response = await axios.get(`${baseurl}groupdetails`, {
@@ -26,18 +27,17 @@ const GroupDetails = ({ groupId, flag, reload }) => {
       const fetchedDetails = await fetchDetailsFromServer(groupId);
       setDetails(fetchedDetails);
     };
-
     fetchData();
   }, [userD]);
 
+
+ 
   async function handlePress() {
     const url = !flag ? `${baseurl}leavegroup` : `${baseurl}cancelrequest`;
     try {
       const response = await axios.delete(url, {
         params: { userId: userD.userName, groupId: groupId },
-      });
-      console.log(response.status);
-
+      })
       if (flag) {
         const updateRequests = userD.requests.filter(
           (r) => r.userId !== groupId

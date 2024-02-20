@@ -18,7 +18,7 @@ function HeaderApp(props: params) {
 
   useEffect(() => {
     animatedLetter();
-  }, []);
+  }, [userD]);
 
   const animatedLetter = () => {
     Animated.loop(

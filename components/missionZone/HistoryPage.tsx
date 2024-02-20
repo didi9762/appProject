@@ -1,17 +1,20 @@
 import React, { useState,useEffect } from "react";
 import { View,Text,TouchableOpacity } from "react-native";
 import { PricingCard } from "react-native-elements";
-import { baseurl } from "../profile/logOperation";
+import { baseurlAtom, userDetails } from "../profile/logOperation";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import MissionInfo from "./missionInfo";
+import { useAtom } from "jotai";
 import { Task } from "../types/types";
 
 export default function HistoryPage() {
   const [reload,setReload] = useState(false)
   const [tasks,setTasks] = useState <Array<Task>> ([])
   const [open,setOpen] = useState<Task|null>(null)
+  const [baseurl] = useAtom(baseurlAtom)
+  const [userD] = useAtom(userDetails)
   const navigation = useNavigation()
 
   useEffect(() => {
@@ -72,6 +75,6 @@ setReload(!reload)
               infoStyle={{ fontSize: 25 }}
               /></TouchableOpacity>
               
-    ):<Text>No missions yin prograss</Text>}
+    ):<Text>{userD?'There are no saved tasks':'Please log in first'}</Text>}
             </View>
         )}

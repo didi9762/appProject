@@ -19,7 +19,7 @@ export default function MassionCard({ info, takeMission }:props) {
   const marginAnim2 = useRef(new Animated.Value(20)).current;
   const marginAnim3 = useRef(new Animated.Value(40)).current;
   const [userD] = useAtom(userDetails);
-  const saveForUser = info.save === userD.userName;
+  const saveForUser = info.saved === userD.userName;
 
   useEffect(() => {
     animateArrows();

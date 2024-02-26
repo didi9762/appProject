@@ -9,7 +9,6 @@ import {
   Alert,
 } from "react-native";
 import { PricingCard } from "react-native-elements";
-import tasksInPrograss from "../../taskAtoms";
 import { useAtom } from "jotai";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { baseurlAtom, userDetails, userSocket } from "../profile/logOperation";
@@ -47,7 +46,7 @@ export default function MissionsInPrograss() {
     getData();
   }, []);
 
-  function taskDone(taskId: string, sender: string) {
+  function taskDone(taskId: string, sender: string,address:string) {
     if (socket) {
       socket.send(
         JSON.stringify({
@@ -55,6 +54,7 @@ export default function MissionsInPrograss() {
           missionId: taskId,
           userDetailes: userD.userName,
           sender: sender,
+          address:address
         })
       );
       return true;
@@ -62,8 +62,8 @@ export default function MissionsInPrograss() {
       return false;
     }
   }
-  async function taskFinifh(id: string, sender: string) {
-    if (taskDone(id, sender)) {
+  async function taskFinifh(id: string, sender: string,address:string) {
+    if (taskDone(id, sender,address)) {
       setTasks((prev) => {
         const uptodate = prev.filter((task) => task.id !== id);
         return uptodate;

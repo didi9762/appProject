@@ -5,7 +5,7 @@ import { Button } from "react-native-elements";
 
 interface Props {
   info: Task;
-  taskFinish: (id: string, sender: string) => void;
+  taskFinish: (id: string, sender: string,address:string) => void;
   close: () => void;
   flag:boolean
 }
@@ -29,7 +29,7 @@ const MissionInfo: React.FC<Props> = ({ info, taskFinish, close,flag }) => {
           title={flag?"Done":'Delete Task'}
           titleStyle={{ color: "black", textAlign: "center" }}
           onPress={() => {
-            taskFinish(info.id, info.sender);
+            taskFinish(info.id, info.sender,info.address);
             close();
           }}
         />

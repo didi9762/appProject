@@ -15,6 +15,7 @@ import { baseurlAtom } from "./components/profile/logOperation";
 import { userDetails,userSocket } from "./components/profile/logOperation";
 import { User } from "./components/types/types";
 import { updateUserInfo } from "./components/profile/updateUserInfo";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 
@@ -48,14 +49,15 @@ function MainPage() {
   }, [clientSocket]);
 
 async function goOnline() {
-    return new Promise((resolve, reject) => {
+    return new Promise(async(resolve, reject) => {
         if (!userD) {
             navigation.navigate("LogIn" as never);
             reject("User not logged in");
             return;
         }
+        const token = await AsyncStorage.getItem('tokenkey')
 
-        const newSocket = newDeliverySocket(userD.userName, updateData, alertFunc, refresh, goOffline, baseurl);
+        const newSocket = newDeliverySocket(userD.userName, updateData, alertFunc, refresh, goOffline, baseurl,token);
         
         newSocket.socket.addEventListener('error', (event) => {
             console.error('WebSocket error cennot connect:', event);

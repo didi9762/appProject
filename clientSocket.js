@@ -10,9 +10,9 @@ import TemporaryUrl from "./temperuryUrl.js";
 // console.log('b:',url);
 // // console.log('url:');
 
-const token= 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwidXNlck5hbWUiOiJyeWFuX21pbGxlciIsImlhdCI6MTUxNjIzOTAyMn0.bUWcin4Uf6CG4mBQlAlo46bcbuHm7WxeOzQcKQhYmrI' 
+// const token= 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwidXNlck5hbWUiOiJyeWFuX21pbGxlciIsImlhdCI6MTUxNjIzOTAyMn0.bUWcin4Uf6CG4mBQlAlo46bcbuHm7WxeOzQcKQhYmrI' 
  class DeliveryGuy {
-  constructor(userName,updateData,alertFunc,refreshFunc,goOfline,baseurl) {
+  constructor(userName,updateData,alertFunc,refreshFunc,goOfline,baseurl,token) {
     // When the URL is not absolute
     const url = baseurl.includes('https')?'https://app-server-socket.onrender.com':baseurl.replace('12345', '8888');
     this.isConnect = 0
@@ -76,8 +76,8 @@ if(event.reason===''){
 
 
 
-export default function newDeliverySocket(userId,updateData,alertFunc,refreshFunc,goOfline,url){
-return new DeliveryGuy(userId,updateData,alertFunc,refreshFunc,goOfline,url);
+export default function newDeliverySocket(userId,updateData,alertFunc,refreshFunc,goOfline,url,token){
+return new DeliveryGuy(userId,updateData,alertFunc,refreshFunc,goOfline,url,token);
 }
 
 

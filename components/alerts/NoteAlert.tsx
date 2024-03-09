@@ -47,7 +47,7 @@ overlayStyle={styles.dialogContainer}
       }
     >
         <View style={{flexDirection:'row'}}>
-        {noteInfo.type==='error'?<AntDesign name="warning" size={25} color={'red'}/>:noteInfo.type==='success'?
+        {noteInfo?.type==='error'?<AntDesign name="warning" size={25} color={'red'}/>:noteInfo?.type==='success'?
         <AntDesign name="checkcircle" size={25} color={'green'}/>:null}
       <Dialog.Title title={noteInfo?.type} titleStyle={{marginLeft:10, color:color}}/></View>
       <Text>

@@ -1,5 +1,5 @@
-import React, { memo, useState } from 'react';
-import { TouchableOpacity, StyleSheet, Text, View } from 'react-native';
+import React, { memo, useState ,useEffect} from 'react';
+import { TouchableOpacity, StyleSheet, Text, View ,BackHandler} from 'react-native';
 import TextInput from './TextInput';
 import { userDetails,baseurlAtom} from './logOperation';
 import {Button} from 'react-native-paper' 
@@ -8,13 +8,24 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = ({ navigation }) => {
-    const [,setUserDetails] = useAtom(userDetails)
+    const [userD,setUserDetails] = useAtom(userDetails)
   const [userName, setUserName] = useState({ value: '', error: '' });
   const [password, setPassword] = useState({ value: '', error: '' });
   const [message,setMassage] = useState('massagge:')
 const [baseurl] = useAtom(baseurlAtom)
 
 
+useEffect(() => {
+  if(!userD){
+  navigation.setOptions({
+    headerShown: false,
+  });
+  const backHandler = BackHandler.addEventListener(
+    'hardwareBackPress',
+    ()=>true
+  );
+  return () => backHandler.remove()}
+}, []);
 
   const logInFunc = async (userName:string, password:string) => {
     try {                                     // {url.value}

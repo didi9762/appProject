@@ -16,7 +16,7 @@ function HeaderApp(props: params) {
   const animatedValues = useRef(new Animated.Value(0)).current;
   const [userD] = useAtom(userDetails)
 
-  useEffect(() => {
+  useEffect(() => { 
     animatedLetter();
   }, [userD]);
 

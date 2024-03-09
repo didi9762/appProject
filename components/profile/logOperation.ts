@@ -9,7 +9,7 @@ import { Socket } from 'net';
 const ip = TemporaryUrl
 // const baseurl = `http://${ip}:12345/client/`
 // console.log('http url:',baseurl);
-const baseurlAtom = atom<string>('')
+const baseurlAtom = atom<string>(' https://app-http-server.vercel.app/client/')
 
 // const baseurl = 'https://app-http-server.vercel.app/client/';
 const userDetails = atom<User>(null as User); 

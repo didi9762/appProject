@@ -3,6 +3,14 @@ export type Requests = {
     time:Date
   };
   
+  export type alertType = {
+    type:string,
+    info1:string,
+    info2:string,
+    info3?:string
+  }
+  
+
   export type User = {
     userName:string,
     id: string;

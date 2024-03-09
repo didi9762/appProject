@@ -16,6 +16,7 @@ export default function HistoryPage() {
   const [baseurl] = useAtom(baseurlAtom)
   const [userD] = useAtom(userDetails)
   const navigation = useNavigation()
+  const url = baseurl.replace('client','common')
 
   useEffect(() => {
     async function  getData() {
@@ -24,7 +25,7 @@ export default function HistoryPage() {
 navigation.navigate('LogIn' as never)
       }
       try{
-        const response = await axios.get(`${baseurl}taskshistory`,{
+        const response = await axios.get(`${url}taskshistory`,{
           headers:{
             "Content-Type":"application/json",
             authorization:token
@@ -49,7 +50,7 @@ navigation.navigate('LogIn' as never)
    async function deleteTask(taskid:string){
     const token = await AsyncStorage.getItem('tokenkey')
 try{
-const response = await axios.delete(`${baseurl}deleteTaskHistory`,{headers:{
+const response = await axios.delete(`${url}deleteTaskHistory`,{headers:{
   "Content-Type":'aplication-json',
   taskId:taskid,
 authorization:token,

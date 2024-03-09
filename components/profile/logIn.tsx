@@ -12,18 +12,13 @@ const LoginScreen = ({ navigation }) => {
   const [userName, setUserName] = useState({ value: '', error: '' });
   const [password, setPassword] = useState({ value: '', error: '' });
   const [message,setMassage] = useState('massagge:')
-const [url,setUrl] = useState({value:'',error:''})
-const [baseurl,setBaseUrl] = useAtom(baseurlAtom)
+const [baseurl] = useAtom(baseurlAtom)
 
 
 
   const logInFunc = async (userName:string, password:string) => {
     try {                                     // {url.value}
-      let urlToUse = 'https://app-http-server.vercel.app'
-      if(url.value!=='1'){urlToUse = `http://${url.value}:12345`}
-      console.log(urlToUse);
-      
-      const response = await axios.post(`${urlToUse}/client/login`, { userName: userName, password:password  });//change 
+      const response = await axios.post(`${baseurl}login`, { userName: userName, password:password  });//change 
       const data = await response.data;
       if(!data||data===null){return}
      
@@ -34,7 +29,7 @@ const [baseurl,setBaseUrl] = useAtom(baseurlAtom)
       console.log(e);
       if(error ==='user not found'){setUserName({value:'',error:'User Name Incorerect'});return}
       if(error==='incorrect password'){setPassword({value:'',error:'Incorrect Password'});return}
-      else{setUrl({value:'',error:'invalid url'})}
+
 
     //   console.log('error try log in:', e);
     //   function concatenateObjectValues(obj) {//function to log the error with all values
@@ -66,32 +61,17 @@ const [baseurl,setBaseUrl] = useAtom(baseurlAtom)
   };
 
   const onLoginPressed = async() => {
-    let urlToUse = 'https://app-http-server.vercel.app'
-      if(url.value!=='1'){urlToUse = `http://${url.value}:12345`}
-    setBaseUrl(`${urlToUse}/client/`)
     const userD =await logInFunc(userName.value,password.value)
     userD.online = false
     setUserDetails(userD)
       setUserName({ ...userName, error: userName.error });
       setPassword({ ...password, error: password.error });
-      setUrl({...url,error:url.error})
       navigation.navigate('MainPage')
       return;
     }  
 
   return (
  <View style={styles.container}>
- <TextInput
-        label="Server Url"
-        returnKeyType="next"
-        value={url.value}
-        onChangeText={text =>setUrl({ value: text, error: '' })}
-        error={!!url.error}
-        errorText={url.error}
-        autoCapitalize="none"
-        textContentType="username"
-      />
-
       <TextInput
         label="User Name"
         returnKeyType="next"

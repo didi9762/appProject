@@ -27,22 +27,23 @@ import TemporaryUrl from "./temperuryUrl.js";
       console.error('WebSocket error:', event);
     });
 
-    // this.socket.addEventListener('open', () => { 
-    //   console.log(`${this.userId} Connected to the server`);
-    //   this.initiateCommunication();
-    //   this.online = true
-    // });
     
     this.socket.addEventListener('message', (event) => {
       const parsedObject = JSON.parse(event.data);
       if (parsedObject.type) {
           if(parsedObject.type==='close'){
-            alertFunc('success','sender confirm, you on a mission')
+            console.log(parsedObject);
+            alertFunc('close',parsedObject.sender,parsedObject.address)
             refreshFunc();return}
+            else if (parsedObject.type==='reject'){
+            
+              alertFunc(parsedObject.type,parsedObject.sender,
+               parsedObject.address)
+            }
             else if(parsedObject.type==='privet'||parsedObject.type==='public'){
               updateData(parsedObject);}
             else{
-          alertFunc(parsedObject.type,parsedObject.message);
+          alertFunc('note',parsedObject.type,parsedObject.message);
           }
         }
     });
@@ -51,12 +52,10 @@ import TemporaryUrl from "./temperuryUrl.js";
       this.online = false
 if(event.reason===''){
       if(this.isConnect){
-        alertFunc('success', 'disconnected successfully')
-      }
-      if(!this.isConnect){
-      alertFunc('error','cant reach server try again')}}
+        alertFunc('note', 'success','disconnected successfully')
+      }}
       else{
-        alertFunc('error', 'WebSocket connection error. Please try go online again.');
+        alertFunc('note', 'error','online connections error please reach costumer service');
       }
       goOfline(true)
       console.log('Connection closed');

@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { View, Alert } from "react-native";
+import { View,} from "react-native";
 import HomePage from "./components/HomePage";
 import newDeliverySocket from "./clientSocket";
 import axios from "axios";
@@ -13,16 +13,17 @@ import { useNavigation } from "@react-navigation/native";
 import { useAtom } from "jotai";
 import { baseurlAtom } from "./components/profile/logOperation";
 import { userDetails,userSocket } from "./components/profile/logOperation";
-import { User } from "./components/types/types";
+import { User, alertType } from "./components/types/types";
 import { updateUserInfo } from "./components/profile/updateUserInfo";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import TemporaryUrl from "./temperuryUrl";
+import AlertMain from "./components/alerts/AlertMain";
 
 
 
 
 const token =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwidXNlck5hbWUiOiJyeWFuX21pbGxlciIsImlhdCI6MTUxNjIzOTAyMn0.bUWcin4Uf6CG4mBQlAlo46bcbuHm7WxeOzQcKQhYmrI";
-// const url = 'http://10.0.0.24:12345/client/'
 interface ClientSocket {
   socket: WebSocket;
   userId: string;
@@ -35,11 +36,13 @@ function MainPage() {
   const [,setSocket] = useAtom(userSocket)
   const [clientSocket, setClientSocket] = useState<ClientSocket | null>(null);
   const navigation = useNavigation();
-  const [baseurl] = useAtom(baseurlAtom)
+  const [baseurl,setBaseUrl] = useAtom(baseurlAtom)
+  const [alertOn,setAlertOn] = useState<alertType|null>(null)
   
 
   useEffect(() => {
-    if(!userD){navigation.navigate('LogIn' as never)}
+    if(!userD){
+        navigation.navigate('LogIn' as never)}
     if (clientSocket) {
       const messageCallback = (message: any) => {
         updateData(message);
@@ -107,9 +110,25 @@ async function goOnline() {
     }
   }
 
-  function alertFunc(type: string, message: string) {
-    Alert.alert(type, message);
+  // function alertFunc(type: string, message: string) {
+  //   Alert.alert(type, message);
+  //   console.log(type,message);
+    
+  //   setAlertOn()
+  // }
 
+  function alertFunc(type:string,info1:string,info2:string,info3:string){
+    const alertDetailes = {
+        type:type,
+        info1:info1,
+        info2:info2,
+        info3:info3
+    }
+    setAlertOn(alertDetailes)
+}
+
+  function closeAlert(){
+    setAlertOn(null)
   }
 
   async function refresh() {
@@ -145,9 +164,14 @@ async function goOnline() {
 
 
 
+
+
   return (
     <View style={{ marginTop: 20 ,backgroundColor:'white'}}>
-      <HeaderApp
+          <AlertMain isVisible={alertOn}  close={closeAlert} />
+      {userD?
+      <View>
+        <HeaderApp
         title={clientSocket ? "online" : "offline"}
         navigation={navigation}
       />
@@ -159,7 +183,7 @@ async function goOnline() {
         refreshData={refresh}
         takeMission={takeMission}
         online={clientSocket ? true : false}
-      />
+      /></View>:null}
     </View>
   );
 }

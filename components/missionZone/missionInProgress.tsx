@@ -99,7 +99,7 @@ export default function MissionsInPrograss() {
             task?
             <TouchableOpacity key={index} onPress={() => openTask(task)}>
               <PricingCard
-                price={`from:${task.senderAddress?task.senderAddress:task.address}`}
+                price={`from:${task.senderAddress?task.senderAddress:task.sender}`}
                 pricingStyle={{ fontSize: 25 }}
                 containerStyle={{ width: "80%", display: "flex" }}
                 color="#4f9deb"
